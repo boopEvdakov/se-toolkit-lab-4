@@ -1,7 +1,7 @@
 """Unit tests for interaction filtering logic."""
 
 from app.models.interaction import InteractionLog
-from app.routers.interactions import _filter_by_item_id
+from app.routers.interactions import _filter_by_item_id  # type: ignore[reportPrivateUsage]
 
 
 def _make_log(id: int, learner_id: int, item_id: int) -> InteractionLog:
@@ -24,3 +24,10 @@ def test_filter_returns_interaction_with_matching_ids() -> None:
     result = _filter_by_item_id(interactions, 1)
     assert len(result) == 1
     assert result[0].id == 1
+
+
+def test_filter_excludes_interaction_with_different_learner_id() -> None:
+    """When filtering by item_id=1, an interaction with learner_id=2 and item_id=1 should be included."""
+    interactions = [_make_log(1, 1, 1), _make_log(2, 2, 1)]
+    result = _filter_by_item_id(interactions, 1)
+    assert len(result) == 2
